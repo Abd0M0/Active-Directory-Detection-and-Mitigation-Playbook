@@ -1,1 +1,2 @@
-# Active-Directory-Security-Playbook
+# Active Directory Detection and Mitigation Playbook
+
