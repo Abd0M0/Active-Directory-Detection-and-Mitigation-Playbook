@@ -14,8 +14,7 @@
  
 **Kerberoasting** is an Active Directory attack where an attacker who already has a valid domain account requests **Kerberos service tickets (TGS)** for accounts associated with services. The attacker isn't interested in actually using the service — they want the TGS ticket itself, because it's encrypted with the **service account's password hash**. That ticket can be taken offline and cracked without touching the network again, making it quiet and hard to detect in real time.
 
-### ⚙️ How does it work? [Image Flow]
-
+### ⚙️ How does it work? 
 ![Kerberoasting Attack Flow](Images/Kerberoasting%20Attack.png)
 
 ### Kerberos authentication process and how Kerberoasting abuses it:
