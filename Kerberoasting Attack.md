@@ -10,8 +10,8 @@
 | 🔍 Discovery | Account Discovery: Domain Account | [T1087.002](https://attack.mitre.org/techniques/T1087/002/) |
 | ↔️ Lateral Movement | Use Alternate Authentication Material | [T1550](https://attack.mitre.org/techniques/T1550/) |
 
-### ❓ What is it?
-
+### 🎫 What is Kerberoasting?
+ 
 **Kerberoasting** is an Active Directory attack where an attacker who already has a valid domain account requests **Kerberos service tickets (TGS)** for accounts associated with services. The attacker isn't interested in actually using the service — they want the TGS ticket itself, because it's encrypted with the **service account's password hash**. That ticket can be taken offline and cracked without touching the network again, making it quiet and hard to detect in real time.
 
 ### ⚙️ How does it work? [Image Flow]
