@@ -14,7 +14,7 @@
 
 **AS-REP Roasting** is an Active Directory attack that targets accounts with the **"Do not require Kerberos pre-authentication"** flag (`DONT_REQ_PREAUTH`) set. Unlike Kerberoasting, the attacker doesn't even need valid credentials to trigger it — they only need to know (or guess) a username. Because pre-authentication is disabled, the Domain Controller hands back an encrypted **AS-REP** blob without ever verifying the requester actually knows the account's password. That blob is encrypted with the target user's password hash and can be cracked offline.
 
-![AS-REP Roasting Attack Flow](Images/AS-REP%20Roasting%20Attack.png)
+![AS-REP Roasting Attack Flow](../Images/AS-REP%20Roasting%20Attack.png)
 
 ### ⚙️ Why does it work? 
 
