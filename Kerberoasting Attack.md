@@ -16,7 +16,7 @@
 
 ### ⚙️ How does it work? [Image Flow]
 
-![Kerberoasting Attack Flow](images/kerberoasting-flow.png)
+![Kerberoasting Attack Flow](Images/Kerberoasting%20Attack.png)
 
 Kerberos authentication process and how Kerberoasting abuses it:
 
