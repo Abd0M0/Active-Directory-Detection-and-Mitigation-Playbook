@@ -29,8 +29,8 @@ Each page also opens with a **Quick Reference** table for fast triage — MITRE 
 
 | Attack | Tactic | MITRE ID | Sigma Rule |
 |---|---|---|---|
-| 🎫 [Kerberoasting](Kerberoasting%20Attack.md) | Credential Access | [T1558.003](https://attack.mitre.org/techniques/T1558/003/) | ✅ |
-| 🎟️ [AS-REP Roasting](AS-REP%20Roasting%20Attack.md) | Credential Access | [T1558.004](https://attack.mitre.org/techniques/T1558/004/) | ✅ |
+| 🎫 [Kerberoasting](AD-Attacks/Kerberoasting%20Attack.md) | Credential Access | [T1558.003](https://attack.mitre.org/techniques/T1558/003/) | ✅ |
+| 🎟️ [AD-Attacks/AS-REP Roasting](AS-REP%20Roasting%20Attack.md) | Credential Access | [T1558.004](https://attack.mitre.org/techniques/T1558/004/) | ✅ |
 ---
 
 ## 🎯 Who This Is For
