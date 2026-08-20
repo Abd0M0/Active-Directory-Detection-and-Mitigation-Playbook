@@ -18,7 +18,7 @@
 
 ![Kerberoasting Attack Flow](Images/Kerberoasting%20Attack.png)
 
-Kerberos authentication process and how Kerberoasting abuses it:
+### Kerberos authentication process and how Kerberoasting abuses it:
 
 1. 🪪 **Initial Login (Getting a TGT):** When a user logs into the network, they prove their identity to the Domain Controller and receive a **Ticket Granting Ticket (TGT)** — their main ID badge for the session.
 2. 📨 **Requesting Access (Getting a TGS):** When the user wants to access a specific service (e.g., a SQL server), their computer presents the TGT to the Domain Controller and requests a ticket for that service.
