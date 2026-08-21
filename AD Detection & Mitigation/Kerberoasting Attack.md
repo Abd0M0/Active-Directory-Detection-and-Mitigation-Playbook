@@ -1,0 +1,187 @@
+# 🎫 Kerberoasting
+
+## 📌 1. Attack Overview
+
+### 🗺️ MITRE ATT&CK Mapping
+
+| Tactic | Technique | ID |
+|---|---|---|
+| 🔑 Credential Access | Steal or Forge Kerberos Tickets: Kerberoasting | [T1558.003](https://attack.mitre.org/techniques/T1558/003/) |
+| 🔍 Discovery | Account Discovery: Domain Account | [T1087.002](https://attack.mitre.org/techniques/T1087/002/) |
+| ↔️ Lateral Movement | Use Alternate Authentication Material | [T1550](https://attack.mitre.org/techniques/T1550/) |
+
+### 🎫 What is Kerberoasting?
+ 
+**Kerberoasting** is an Active Directory attack where an attacker who already has a valid domain account requests **Kerberos service tickets (TGS)** for accounts associated with services. The attacker isn't interested in actually using the service — they want the TGS ticket itself, because it's encrypted with the **service account's password hash**. That ticket can be taken offline and cracked without touching the network again, making it quiet and hard to detect in real time.
+
+### ⚙️ How does it work? 
+![Kerberoasting Attack Flow](../Images/Kerberoasting%20Attack.png)
+
+### 🔑 Kerberos authentication process and how Kerberoasting abuses it:
+
+1. 🪪 **Initial Login (Getting a TGT):** When a user logs into the network, they prove their identity to the Domain Controller and receive a **Ticket Granting Ticket (TGT)** — their main ID badge for the session.
+2. 📨 **Requesting Access (Getting a TGS):** When the user wants to access a specific service (e.g., a SQL server), their computer presents the TGT to the Domain Controller and requests a ticket for that service.
+3. 🔐 **Issuing the TGS Ticket:** The Domain Controller verifies the TGT and issues a **TGS ticket**, encrypted using the **service's own password hash**. This is the DC saying "this user is allowed to talk to this service."
+4. ✅ **Accessing the Service:** The user's computer presents this TGS ticket to the service to gain access.
+
+**The vulnerability sits in step 3** — any authenticated domain user can request a TGS ticket for *any* registered service (any account with a Service Principal Name, or SPN), regardless of whether they actually intend to use it. Because the ticket is encrypted with the service account's password hash, an attacker can request it, walk away with the encrypted blob, and crack it offline at their own pace — no failed logon attempts, no lockouts, no noisy network traffic after the initial request.
+
+### 🎯 What does the attacker want?
+
+- 🔓 **The service account's password hash** (embedded in the TGS ticket) → cracked offline → cleartext password → access as that service account.
+- 📈 **Privilege escalation** — service accounts are frequently over-privileged (Domain Admin, Backup Operators, etc.), so cracking one can hand over much more than a single service.
+- ↔️ **Lateral movement** — once a service account's password is known, the attacker can authenticate to every system that account has permissions on.
+
+### 🛠️ Tools Adversaries Use
+
+| Tool | Purpose |
+|---|---|
+| 🗡️ **Rubeus** | Kerberos ticket manipulation — discovers and requests TGS tickets, performs Kerberoasting directly. |
+| 🐍 **Impacket (GetUserSPNs.py)** | Enumerates AD accounts with SPNs and requests their TGS tickets. |
+| 🕵️ **PowerView** | AD reconnaissance — finds users, groups, computers, and SPN/service accounts. |
+| 🔨 **Hashcat** | Offline cracking of captured Kerberos ticket material. |
+| 🔓 **John the Ripper** | Alternative offline password cracker for recovering service-account passwords. |
+
+---
+
+## 🔎 2. Detection
+
+### 📜 Event ID 4738 & 5136 — User Object / SPN Modification
+- **Source:** Domain Controller
+- **When it happens:** An account is modified to add a **Service Principal Name (SPN)**, and later the SPN is removed.
+- **Why it matters:** Attackers don't always roast existing SPNs — sometimes they create their own on a controlled account, request a TGS, then delete the SPN to cover their tracks.
+- **Detection idea:**
+  - Alert on SPN additions/removals, especially on accounts that don't normally carry an SPN.
+  - Correlate SPN creation → TGS request → SPN deletion in a short time window.
+
+### 🎫 Event ID 4769 — TGS Request
+- **Source:** Domain Controller
+- **When it happens:** Any time a Ticket Granting Service (TGS) ticket is requested from AD.
+- **Why it matters:** Kerberoasting fundamentally relies on requesting service tickets.
+- **Detection idea:**
+  - ⚠️ Monitor for **encryption type `0x17` (RC4)** — weak, and the type most Kerberoasting tools request.
+  - ✅ In a healthy, modern (AD 2022+) environment, expect **`0x11` (AES128)** or **`0x12` (AES256)**.
+  - 📊 Flag unusual volume/frequency of TGS requests from a single user or host in a short period (bulk SPN enumeration).
+
+### 🚩 TGS Ticket Options — `0x40800000` / `0x40810000`
+- **Where to see it:** Inside Event ID 4769 logs (Ticket Options field).
+- **Why it matters:** These specific option values are commonly generated by Kerberoasting tooling (Rubeus, Impacket), and are rare in legitimate application traffic.
+- **Detection idea:** Flag TGS requests carrying these option values for review.
+
+### 🐤 AD Canaries (bonus defense)
+- Plant "canary" SPNs on monitored decoy accounts that have no legitimate reason to be requested.
+- **Any** TGS request for a canary SPN is a high-confidence Kerberoasting indicator.
+
+### 📋 Summary
+
+| Signal | Meaning |
+|---|---|
+| 🟠 4738 / 5136 | Suspicious SPN change |
+| 🔴 4769 with `0x17` | Kerberoasting attempt (RC4 ticket) |
+| 🔴 4769 with `0x40800000` / `0x40810000` | Tool-based roasting (Rubeus/Impacket) |
+| 🟢 4769 with `0x11` / `0x12` | Expected/healthy (AES) |
+| 🚨 TGS request for canary SPN | Confirmed attack attempt |
+
+---
+
+## 🧩 3. Sigma Rule
+
+```yaml
+title: Potential Kerberoasting via RC4 TGS Request
+id: 7f8e3b2a-1c4d-4e6f-9a0b-3d5c7e9f1a2b
+status: experimental
+description: >
+  Detects Kerberos TGS requests (Event ID 4769) using weak RC4 encryption
+  (0x17), which is commonly associated with Kerberoasting attacks since most
+  offline cracking tools request RC4 tickets due to their weaker key
+  derivation compared to AES.
+references:
+  - https://attack.mitre.org/techniques/T1558/003/
+  - https://www.crowdstrike.com/en-us/cybersecurity-101/cyberattacks/kerberoasting/
+author: '<Your Name / Team>'
+date: 2026-08-20
+tags:
+  - attack.credential-access
+  - attack.t1558.003
+logsource:
+  product: windows
+  service: security
+  definition: 'Requires auditing of Kerberos Service Ticket Operations to be enabled'
+detection:
+  selection:
+    EventID: 4769
+    TicketEncryptionType: '0x17'
+  filter_machine_accounts:
+    ServiceName|endswith: '$'
+  condition: selection and not filter_machine_accounts
+falsepositives:
+  - Legacy applications or devices that only support RC4 encryption
+  - Environments that have not fully migrated to AES for Kerberos
+level: medium
+```
+```yaml
+title: Suspicious Kerberoasting Tool Ticket Options
+id: 4a1d6c8e-2b5f-4a7d-8e1c-9f3b5d7a2c4e
+status: experimental
+description: >
+  Detects Kerberos TGS requests with ticket option flags commonly generated
+  by Kerberoasting tools such as Rubeus and Impacket's GetUserSPNs.
+references:
+  - https://attack.mitre.org/techniques/T1558/003/
+author: '<Your Name / Team>'
+date: 2026-08-20
+tags:
+  - attack.credential-access
+  - attack.t1558.003
+logsource:
+  product: windows
+  service: security
+  definition: 'Requires auditing of Kerberos Service Ticket Operations to be enabled'
+detection:
+  selection:
+    EventID: 4769
+    TicketOptions:
+      - '0x40800000'
+      - '0x40810000'
+  condition: selection
+falsepositives:
+  - Rare legitimate applications that request these specific ticket options
+level: high
+```
+
+> ℹ️ **Note:** Field names (`TicketEncryptionType`, `TicketOptions`, `ServiceName`) should be mapped to your SIEM's log field-naming convention (e.g., Splunk CIM, Elastic ECS) at deployment time.
+
+---
+
+## 🛡️ 4. Mitigation
+
+1. 🚫 **Minimize accounts with SPNs**
+   - Don't assign SPNs to normal user accounts unless absolutely required.
+   - Fewer SPN-bearing accounts means a smaller attack surface for an attacker to target.
+
+2. 🔄 **Use gMSAs (Group Managed Service Accounts) whenever possible**
+   - Passwords rotate automatically (default every 30 days).
+   - Password length up to **120 characters** — effectively uncrackable offline.
+   - No manual password management by admins.
+   - Makes Kerberoasting practically useless against these accounts.
+
+3. 🪜 **Apply least privilege**
+   - Service accounts should have only the permissions they need.
+   - Never add service accounts to **Domain Admins** or other highly privileged groups.
+   - Reference: [Least privilege guidance](https://shorturl.at/0yG62)
+
+4. 🔒 **Enforce strong encryption**
+   - Enable **AES encryption** for SPNs instead of RC4.
+   - AES ticket material is far more resistant to offline cracking.
+   - Reference: [Encryption guidance](https://shorturl.at/bMq3r)
+
+5. 👀 **Monitor and alert continuously**
+   - Watch for suspicious RC4 ticket requests (Event ID 4769, encryption type `0x17`).
+   - Expect and baseline AES encryption types (`0x11`/`0x12`) in logs; treat deviations as anomalies.
+
+---
+
+## 📚 5. Resources
+
+- 🔗 [CrowdStrike – Kerberoasting](https://www.crowdstrike.com/en-us/cybersecurity-101/cyberattacks/kerberoasting/)
+- 🔗 [Red Canary – Blog / Resource Center](https://redcanary.com/resources-center/category/blog/)
