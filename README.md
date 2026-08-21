@@ -29,10 +29,10 @@ Each page also opens with a **Quick Reference** table for fast triage — MITRE 
 
 | Attack | Tactic | MITRE ID | Sigma Rule |
 |---|---|---|---|
-| 🎫 [Kerberoasting](AD-Attacks/Kerberoasting%20Attack.md) | Credential Access | [T1558.003](https://attack.mitre.org/techniques/T1558/003/) | ✅ |
-| 🎟️ [AD-Attacks/AS-REP Roasting](AS-REP%20Roasting%20Attack.md) | Credential Access | [T1558.004](https://attack.mitre.org/techniques/T1558/004/) | ✅ |
----
+| 🎫 [Kerberoasting](AD%20Detection%20&%20Mitigation/Kerberoasting%20Attack.md) | Credential Access | [T1558.003](https://attack.mitre.org/techniques/T1558/003/) | ✅ |
+| 🎟️ [AS-REP Roasting](AD%20Detection%20&%20Mitigation/Authentication%20Server%20Response%20(AS-REP)%20Roasting.md) | Credential Access | [T1558.004](https://attack.mitre.org/techniques/T1558/004/) | ✅ |
 
+---
 ## 🎯 Who This Is For
 
 This repo is built for **blue teams, detection engineers, and SOC analysts** who need to:
