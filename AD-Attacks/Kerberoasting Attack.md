@@ -168,12 +168,12 @@ level: high
 3. 🪜 **Apply least privilege**
    - Service accounts should have only the permissions they need.
    - Never add service accounts to **Domain Admins** or other highly privileged groups.
-   - Reference: [Least privilege guidance](https://shorturl.at/0yG62)
+   - Reference: [Least privilege guidance](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/implementing-least-privilege-administrative-models)
 
 4. 🔒 **Enforce strong encryption**
    - Enable **AES encryption** for SPNs instead of RC4.
    - AES ticket material is far more resistant to offline cracking.
-   - Reference: [Encryption guidance](https://shorturl.at/bMq3r)
+   - Reference: [Encryption guidance](https://techcommunity.microsoft.com/blog/coreinfrastructureandsecurityblog/active-directory-hardening-series---part-4-%E2%80%93-enforcing-aes-for-kerberos/4114965)
 
 5. 👀 **Monitor and alert continuously**
    - Watch for suspicious RC4 ticket requests (Event ID 4769, encryption type `0x17`).
