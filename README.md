@@ -42,7 +42,7 @@ This repo is built for **blue teams, detection engineers, and SOC analysts** who
 - Harden Active Directory against credential theft and privilege escalation
 - Map detections back to MITRE ATT&CK for coverage tracking
 
-#### 🤝 Contributing Contributions are welcome. To add a new attack page:
+#### 🤝 Contributions are welcome. To add a new attack page
 
 
 ## ⚖️ License
