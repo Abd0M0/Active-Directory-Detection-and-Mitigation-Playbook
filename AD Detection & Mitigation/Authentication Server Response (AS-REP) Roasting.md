@@ -1,5 +1,16 @@
 # 🎟️ AS-REP Roasting
 
+# 📋 Table of Contents
+
+- [Attack Overview](#-attack-overview)
+- [Detection](#-detection)
+- [Sigma Rule](#-sigma-rule)
+- [Mitigation](#-mitigation)
+- [Resources](#-resources)
+
+---
+
+<a id="-attack-overview"></a>
 ## 📌 1. Attack Overview
 
 ### 🗺️ MITRE ATT&CK Mapping
@@ -52,6 +63,7 @@ The key difference from Kerberoasting: **AS-REP Roasting requires no valid domai
 
 ---
 
+<a id="-detection"></a>
 ## 🔎 2. Detection
 
 ### 📜 Event ID 4768 — TGT Request
@@ -85,6 +97,7 @@ The key difference from Kerberoasting: **AS-REP Roasting requires no valid domai
 
 ---
 
+<a id="-sigma-rule"></a>
 ## 🧩 3. Sigma Rule
 
 ```yaml
@@ -153,6 +166,7 @@ level: medium
 
 ---
 
+<a id="-mitigation"></a>
 ## 🛡️ 4. Mitigation
 
 1. 🔐 **Require Kerberos Pre-Authentication**
@@ -178,6 +192,7 @@ level: medium
 
 ---
 
+<a id="-resources"></a>
 ## 📚 5. Resources
 
 - 🔗 [MITRE ATT&CK – T1558.004 AS-REP Roasting](https://attack.mitre.org/techniques/T1558/004/)
