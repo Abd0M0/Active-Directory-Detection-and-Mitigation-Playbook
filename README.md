@@ -1,11 +1,16 @@
 # 🛡️ Active Directory Attack Detection & Mitigation
 
+<div align="center">
+  
 ![Focus](https://img.shields.io/badge/Focus-Blue%20Team-blue)
 ![Platform](https://img.shields.io/badge/Platform-Active%20Directory-informational)
 ![Framework](https://img.shields.io/badge/Framework-MITRE%20ATT%26CK-orange)
 ![Detections](https://img.shields.io/badge/Sigma%20Rules-Included-brightgreen)
+</div>
 
-A curated, blue-team-focused knowledge base of **Active Directory attack techniques** — how they work, how to detect them, and how to stop them. Each attack page follows a consistent structure so you can jump straight to what you need: the mechanics, ready-to-use Sigma rules, and hardening steps.
+A **blue-team knowledge base** about **Active Directory attacks**. Learn how attacks work, how to detect them, and how to stop them.
+
+Each page includes the **attack steps, MITRE ATT&CK technique, detection methods, Sigma rules, and mitigation**.
 
 ---
 
