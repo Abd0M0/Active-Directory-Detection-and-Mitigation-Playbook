@@ -8,9 +8,9 @@
 ![Detections](https://img.shields.io/badge/Sigma%20Rules-Included-brightgreen)
 </div>
 
-A **blue-team knowledge base** about **Active Directory attacks**. Learn how attacks work, how to detect them, and how to stop them.
+A **blue-team guide to Active Directory attacks**. Learn how these attacks work, how to detect them, and how to defend against them.
 
-Each page includes the **attack steps, MITRE ATT&CK technique, detection methods, Sigma rules, and mitigation**.
+Each page covers the **attack, MITRE ATT&CK technique, detection, Sigma rules, and mitigation**.
 
 ---
 
