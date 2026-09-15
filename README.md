@@ -48,3 +48,8 @@ This repo is built for **blue teams, detection engineers, and SOC analysts** who
 - Map detections back to MITRE ATT&CK for coverage tracking
 
 #### 🤝 Contributions are welcome. To add a new attack page
+
+## 📄 License
+This project is licensed under the MIT License.
+See the [LICENSE](LICENSE) file for details.
+
